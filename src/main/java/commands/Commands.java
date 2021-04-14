@@ -67,113 +67,11 @@ public class Commands {
 				return output;
 			}
 		});
-		commandMap.put("AimTurret", () -> new RobotCommand("AimTurret", TURRET_COLOR) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				return output;
-			}
-		});
-		commandMap.put("PrepShooter", () -> new RobotCommand("PrepShooter", SHOOT_COLOR, new NumberField("RPM"), new ToggleButton("UseLimelight")) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				return output;
-			}
-		});
-		commandMap.put("MoveTrapezoidal", () -> new RobotCommand("MoveTrapezoidal", DRIVE_COLOR,
-			new NumberField("Distance"), new NumberField("StartVel"), new NumberField("EndVel"), new NumberField("VMax"), new NumberField("AMax")) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				Point position = output.getPosition();
-				double distance = getNumberFromName("Distance").getValue();
-				position = position.add(Point.fromPolar(distance, output.getAngle()));
-				output.setPosition(position);
-				return output;
-			}
-			@Override
-			public void drawPreview(Graphics g) {
-				super.drawPreview(g);
-				g.setColor(Color.red);
-				getInitial().getPosition().toPixels().draw(g);
-				getOutput().getPosition().toPixels().draw(g);
-				getInitial().getPosition().toPixels().drawLine(g, getOutput().getPosition().toPixels());
-			}
-		});
-		commandMap.put("RunIntake", () -> new RobotCommand("RunIntake", DRIVE_COLOR, new ToggleButton("ShouldRun"), new ToggleButton("Extended")) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				return output;
-			}
-		});
-		commandMap.put("ShootRPM", () -> new RobotCommand("ShootRPM", SHOOT_COLOR, new NumberField("Time"), new NumberField("RPM"), new ToggleButton("UseLimelight")) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				return output;
-			}
-		});
 		commandMap.put("SetTurretAngle", () -> new RobotCommand("SetTurretAngle", TURRET_COLOR, new NumberField("Angle")) {
 			@Override
 			public Robot applyCommand(Robot initial) {
 				Robot output = initial.getCopy();
 				((Turret) output.getSubsystem("Turret")).setAngle(getNumberFromName("Angle").getValue());
-				return output;
-			}
-		});
-		commandMap.put("TurnArc", () -> new RobotCommand("TurnArc", DRIVE_COLOR, new NumberField("Radius"), new NumberField("Angle"), new ToggleButton("Direction")) {
-			Point pivot;
-			double radius, angle;
-			boolean direction;
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				Point position = initial.getPosition();
-				radius = getNumberFromName("Radius").getValue();
-				angle = Math.toRadians(getNumberFromName("Angle").getValue());
-				direction = getBooleanFromName("Direction").getValue();
-				if (direction) {
-					pivot = Point.fromPolar(radius, initial.getAngle()+Math.PI/2).add(position);
-					output.setPosition(Point.fromPolar(radius, angle - Math.PI/2).add(pivot));
-					output.setAngle(initial.getAngle() + angle);
-				} else {
-					pivot = Point.fromPolar(radius, initial.getAngle()-Math.PI/2).add(position);
-					output.setPosition(Point.fromPolar(radius, -angle + Math.PI/2).add(pivot));
-					output.setAngle(initial.getAngle() - angle);
-				}
-				return output;
-			}
-			@Override
-			public void drawPreview(Graphics g) {
-				super.drawPreview(g);
-				Point pivotPixels = pivot.toPixels();
-				if (getHovered()) {
-					pivotPixels.draw(g);
-					pivotPixels.drawLine(g, getInitial().getPosition().toPixels());
-					pivotPixels.drawLine(g, getOutput().getPosition().toPixels());
-				}
-				g.setColor(Color.red);
-				getInitial().getPosition().toPixels().draw(g);
-				getOutput().getPosition().toPixels().draw(g);
-				Point boxPosition1 = new Point(pivot.x - radius, pivot.y - radius).toPixels();
-				Point boxPosition2 = new Point(pivot.x + radius, pivot.y + radius).toPixels();
-				double angle1 = pivot.getAngleToPoint(getInitial().getPosition());
-				double angle2 = pivot.getAngleToPoint(getOutput().getPosition());
-				if (direction) {
-					g.drawArc((int)boxPosition1.x, (int)boxPosition1.y, (int)(boxPosition2.x - boxPosition1.x), (int)(boxPosition2.y - boxPosition1.y), (int)Math.toDegrees(angle2 + Math.PI / 2), (int)Math.toDegrees(angle));
-				} else {
-					g.drawArc((int)boxPosition1.x, (int)boxPosition1.y, (int)(boxPosition2.x - boxPosition1.x), (int)(boxPosition2.y - boxPosition1.y), (int)Math.toDegrees(angle1 - Math.PI/2), (int)Math.toDegrees(angle));
-				}
-			}
-		});
-		commandMap.put("TurnGyro", () -> new RobotCommand("TurnGyro", DRIVE_COLOR, new NumberField("Angle")) {
-			@Override
-			public Robot applyCommand(Robot initial) {
-				Robot output = initial.getCopy();
-				double angle = getNumberFromName("Angle").getValue();
-				output.setAngle(output.getAngle() + angle);
 				return output;
 			}
 		});
