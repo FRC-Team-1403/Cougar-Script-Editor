@@ -33,9 +33,9 @@ public class Robot {
 	 * Create a new Robot.
 	 * @param position The position of the robot relative to the field image, in feet.
 	 * @param angle The angle of the robot in standard form, in degrees.
-	 * @param susbsytems The subsystems to use. Creates copies of the subsystems.
+	 * @param subsystems The subsystems to use. Creates copies of the subsystems.
 	 */
-	public Robot(Point position, double angle, Subsystem... susbsytems) {
+	public Robot(Point position, double angle, Subsystem... subsystems) {
 		this.position = position.getCopy();
 		this.angle = angle;
 		this.robotSize = new Point(2, 3); //<-- width, height
