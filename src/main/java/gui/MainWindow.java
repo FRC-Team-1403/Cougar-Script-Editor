@@ -132,6 +132,8 @@ public class MainWindow extends Window implements MouseListener, MouseMotionList
 			e.printStackTrace();
 		}
 		addHistoryEntry('.');
+		//add a set start position
+		queue.add(Commands.commandMap.get("SetStartPosition").get());
 		timer.start();
 	}
 
