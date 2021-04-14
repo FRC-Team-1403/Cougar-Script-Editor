@@ -6,6 +6,7 @@ import java.awt.Polygon;
 import java.util.HashSet;
 import java.util.Set;
 
+import exceptions.SubsystemNotFound;
 import util.Point;
 
 /**
@@ -64,7 +65,7 @@ public class Robot {
 				return s;
 			}
 		}
-		return null;
+		throw new SubsystemNotFound(name + ", available subsystems: " + subsystems.toString());
 	}
 
 	/**
