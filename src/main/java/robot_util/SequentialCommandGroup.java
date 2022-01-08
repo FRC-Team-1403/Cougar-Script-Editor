@@ -1,11 +1,11 @@
 package frc.robot.autonomous;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.SubsystemManager;
 
 
 public class SequentialCommandGroup extends CommandBase {
@@ -15,8 +15,9 @@ public class SequentialCommandGroup extends CommandBase {
     private Command toRun;
     private boolean isFinished = false;
     private Pose2d startPose;
+    private Consumer<Pose2d> onStart;
 
-    public SequentialCommandGroup(Pose2d startPose, Command... c_iter) {
+    public SequentialCommandGroup(Pose2d startPose, Consumer<Pose2d> onStart, Command... c_iter) {
         this.commandsToRun = new ArrayList<>(); 
         for (Command i: c_iter) {
             this.commandsToRun.add(i);
@@ -24,10 +25,11 @@ public class SequentialCommandGroup extends CommandBase {
         this.maxIndex = this.commandsToRun.size();
         this.toRun = this.commandsToRun.get(this.currIndex);
         this.startPose = startPose;
+        this.onStart = onStart;
     }
 
     public SequentialCommandGroup(Command... c_iter) {
-        this(null, c_iter);
+        this(null, null, c_iter);
     }
 
     public void setStartPose(Pose2d pose) {
@@ -45,17 +47,13 @@ public class SequentialCommandGroup extends CommandBase {
         isFinished = false;
     }
 
-    public void remove() {
-        // TODO later; idk if this is necessary
-    }
-
     // Only called like this so you know to put it in the main teleop loop
     @Override
     public void schedule() {
         super.schedule();
         this.toRun.schedule();
         if (startPose != null) {
-            SubsystemManager.getInstance().getNEODrivetrain().poseEstimator.setPose(startPose);
+            onStart.accept(startPose);
         }
         reset();
     }
@@ -83,5 +81,4 @@ public class SequentialCommandGroup extends CommandBase {
     public boolean isFinished() {
         return isFinished;
     }
-
 }

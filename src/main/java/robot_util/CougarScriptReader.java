@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.json.JSONArray;
@@ -30,11 +31,21 @@ public class CougarScriptReader {
     private static CougarScriptReader instance;
 
     private Map<String, Function<CougarScriptObject, Command>> commandMap;
+    Consumer<Pose2d> onStartPose;
 
-    public CougarScriptReader() {
+    /**
+    * Constructor for CougarScriptReader 
+    * @param toRun sets the start position of your robot.  Called when a SequentialCommandGroup (created by the CougarScriptReader) is scheduled. The start position is read from the setStartPosition Command in a Cougar Script.
+    * When initilizing your CougarScriptReader, make sure to define this so that your robot can set its starting position for the drivepath
+    * reader = new CougarScriptReader((Pose2d startPose) -> {
+    *    methodToSetDriveTrainStartPose(startPose);
+    * });
+    */
+    public CougarScriptReader(Consumer<Pose2d> toRun) {
         if (instance != null) {return;}
         instance = this;
-        
+        onStartPose = toRun;
+
         //register parallelcommand automatically
         commandMap = new HashMap<String, Function<CougarScriptObject, Command>>();
         registerCommand("ParallelCommand", (CougarScriptObject p) -> {
@@ -93,8 +104,10 @@ public class CougarScriptReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SequentialCommandGroup(startPose, commands.toArray(new Command[commands.size()]));
+        return new SequentialCommandGroup(startPose, onStartPose, commands.toArray(new Command[commands.size()]));
     }
+
+
 
     private Command parseCommandFromJSON(JSONObject commandJSON) {
         String commandName = (String) commandJSON.get("CommandName");
