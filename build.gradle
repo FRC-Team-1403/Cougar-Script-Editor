@@ -5,5 +5,5 @@ repositories {
    mavenCentral()
 }
 dependencies {
-    implementation group: 'org.json', name: 'json', version: '20210307'
+    implementation 'org.json:json:20210307'
 }
